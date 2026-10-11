@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Якитория — доставка суши и роллов</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: { brand: { DEFAULT: '#e4002b', dark: '#b80023' } } } } };
+  </script>
+  <style>
+    html { scroll-behavior: smooth; scroll-padding-top: 130px; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { scrollbar-width: none; }
+    .slide { transition: opacity .6s ease; }
+  </style>
+</head>
+<body class="bg-stone-50 text-stone-900 font-sans antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center gap-3 md:gap-6">
+      <a href="#top" class="flex items-center gap-2 shrink-0">
+        <span class="w-9 h-9 rounded-full bg-brand text-white grid place-items-center font-black">Я</span>
+        <span class="text-xl font-black tracking-tight hidden sm:block">Якитория</span>
+      </a>
+
+      <div class="relative">
+        <button id="cityBtn" class="flex items-center gap-1 text-sm font-semibold hover:text-brand">
+          <span>📍</span><span id="cityName">Москва</span><span class="text-xs">▾</span>
+        </button>
+        <ul id="cityList" class="hidden absolute left-0 top-8 w-44 bg-white rounded-xl shadow-lg border border-stone-100 py-1 text-sm"></ul>
+      </div>
+
+      <div class="hidden lg:block ml-2 leading-tight">
+        <a href="tel:+78005550000" class="font-bold">8 800 555-00-00</a>
+        <div class="text-xs text-stone-500">Доставка с 10:00 до 23:00</div>
+      </div>
+
+      <div class="ml-auto flex items-center gap-2 md:gap-3">
+        <button id="loginBtn" class="px-3 py-2 text-sm font-semibold rounded-full border border-stone-200 hover:border-brand hover:text-brand">Войти</button>
+        <button id="cartBtn" class="flex items-center gap-2 pl-3 pr-4 py-2 rounded-full bg-brand hover:bg-brand-dark text-white text-sm font-bold transition">
+          <span>🛒</span>
+          <span class="hidden sm:inline">Корзина</span>
+          <span id="cartCount" class="min-w-[22px] h-[22px] px-1 rounded-full bg-white text-brand text-xs grid place-items-center">0</span>
+          <span id="cartTotal" class="hidden md:inline">0 ₽</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- Promo slider -->
+    <section class="max-w-7xl mx-auto px-4 mt-4">
+      <div class="relative h-56 sm:h-72 md:h-96 rounded-3xl overflow-hidden" id="slider"></div>
+    </section>
+
+    <!-- Categories -->
+    <nav class="sticky top-16 z-30 bg-stone-50/95 backdrop-blur mt-4 border-b border-stone-200">
+      <div id="categories" class="max-w-7xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto no-scrollbar"></div>
+    </nav>
+
+    <!-- Catalog -->
+    <section id="catalog" class="max-w-7xl mx-auto px-4 py-8 space-y-12"></section>
+  </main>
+
+  <footer class="bg-stone-900 text-stone-300 mt-8">
+    <div class="max-w-7xl mx-auto px-4 py-8 grid gap-4 sm:grid-cols-3 text-sm">
+      <div><div class="text-white font-black text-lg">Якитория</div>Учебный фронтенд-макет. Не является реальным магазином.</div>
+      <div>8 800 555-00-00<br>Ежедневно с 10:00 до 23:00</div>
+      <div>Бесплатная доставка от 1500 ₽<br>Среднее время — 45 минут</div>
+    </div>
+  </footer>
+
+  <!-- Cart drawer -->
+  <div id="overlay" class="hidden fixed inset-0 z-50 bg-black/50"></div>
+  <aside id="drawer" class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-white shadow-2xl translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="flex items-center justify-between p-4 border-b">
+      <h2 class="text-xl font-black">Ваш заказ</h2>
+      <button id="closeCart" class="w-9 h-9 rounded-full hover:bg-stone-100 text-xl" aria-label="Закрыть">✕</button>
+    </div>
+    <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+    <div class="p-4 border-t space-y-3">
+      <div class="flex justify-between font-bold text-lg"><span>Итого</span><span id="drawerTotal">0 ₽</span></div>
+      <button id="checkoutBtn" class="w-full py-3 rounded-full bg-brand hover:bg-brand-dark text-white font-bold disabled:opacity-40">Оформить заказ</button>
+    </div>
+  </aside>
+
+  <!-- Login modal -->
+  <div id="loginModal" class="hidden fixed inset-0 z-50 bg-black/50 grid place-items-center p-4">
+    <form id="loginForm" class="bg-white rounded-3xl p-6 w-full max-w-sm space-y-4">
+      <h2 class="text-xl font-black">Вход по номеру телефона</h2>
+      <input required type="tel" placeholder="+7 (___) ___-__-__" class="w-full border border-stone-300 rounded-xl px-4 py-3 focus:outline-none focus:border-brand">
+      <button class="w-full py-3 rounded-full bg-brand text-white font-bold">Получить код</button>
+      <button type="button" id="closeLogin" class="w-full text-sm text-stone-500">Отмена</button>
+    </form>
+  </div>
+
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] bg-stone-900 text-white text-sm px-5 py-3 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
